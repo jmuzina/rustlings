@@ -10,6 +10,12 @@ fn factorial(num: u64) -> u64 {
     // - additional variables
     // For an extra challenge, don't use:
     // - recursion
+
+    match num {
+        0 => 1,
+        pos => num * factorial(pos - 1)
+    }
+
 }
 
 fn main() {

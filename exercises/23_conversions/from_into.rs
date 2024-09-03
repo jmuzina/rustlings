@@ -20,7 +20,6 @@ impl Default for Person {
     }
 }
 
-// TODO: Complete this `From` implementation to be able to parse a `Person`
 // out of a string in the form of "Mark,20".
 // Note that you'll need to parse the age component into a `u8` with something
 // like `"4".parse::<u8>()`.
@@ -34,7 +33,30 @@ impl Default for Person {
 // 5. Parse the second element from the split operation into a `u8` as the age.
 // 6. If parsing the age fails, return the default of `Person`.
 impl From<&str> for Person {
-    fn from(s: &str) -> Self {}
+    fn from(s: &str) -> Self {
+        let parse: Vec<&str> = s.split(',').collect();
+        if parse.len() != 2 {
+            Person::default()
+        } else {
+            let name = parse[0].trim();
+            if name.is_empty() {
+                Person::default()
+            } else {
+                let age = parse[1].trim();
+                if age.is_empty() {
+                    return Person::default();
+                }
+                if let Ok(ageNum) = age.parse::<u8>() {
+                    Person {
+                        name: String::from(name),
+                        age: ageNum
+                    }
+                } else {
+                    Person::default()
+                }
+            }
+        }
+    }
 }
 
 fn main() {

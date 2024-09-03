@@ -1,5 +1,4 @@
 // Here are some more easy Clippy fixes so you can see its utility 📎
-// TODO: Fix all the Clippy lints.
 
 use std::mem::swap;
 

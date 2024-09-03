@@ -36,25 +36,25 @@ impl From<&str> for Person {
     fn from(s: &str) -> Self {
         let parse: Vec<&str> = s.split(',').collect();
         if parse.len() != 2 {
-            Person::default()
-        } else {
-            let name = parse[0].trim();
-            if name.is_empty() {
-                Person::default()
-            } else {
-                let age = parse[1].trim();
-                if age.is_empty() {
-                    return Person::default();
-                }
-                if let Ok(ageNum) = age.parse::<u8>() {
-                    Person {
-                        name: String::from(name),
-                        age: ageNum
-                    }
-                } else {
-                    Person::default()
-                }
-            }
+            return Person::default();
+        }
+
+        let name = parse[0].trim();
+        if name.is_empty() {
+            return Person::default();
+        }
+
+        let age_str = parse[1].trim();
+        if age_str.is_empty() {
+            return Person::default();
+        }
+
+        match age_str.parse::<u8>() {
+            Ok(age) => Person {
+                name: String::from(name),
+                age
+            },
+            _ => Person::default()
         }
     }
 }

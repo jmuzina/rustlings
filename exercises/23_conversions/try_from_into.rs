@@ -23,27 +23,72 @@ enum IntoColorError {
     IntConversion,
 }
 
-// TODO: Tuple implementation.
-// Correct RGB color values must be integers in the 0..=255 range.
 impl TryFrom<(i16, i16, i16)> for Color {
     type Error = IntoColorError;
 
-    fn try_from(tuple: (i16, i16, i16)) -> Result<Self, Self::Error> {}
+    fn try_from(tuple: (i16, i16, i16)) -> Result<Self, Self::Error> {
+        Color::try_from([tuple.0, tuple.1, tuple.2])
+    }
 }
 
-// TODO: Array implementation.
+impl TryFrom<&[u8]> for Color {
+    type Error = IntoColorError;
+
+    fn try_from(slice: &[u8]) -> Result<Self, Self::Error> {
+        if slice.len() != 3 {
+            return Err(IntoColorError::BadLen);
+        }
+
+        Ok(Self::try_from([slice[0], slice[1], slice[2]]).unwrap())
+    }
+}
+
 impl TryFrom<[i16; 3]> for Color {
     type Error = IntoColorError;
 
-    fn try_from(arr: [i16; 3]) -> Result<Self, Self::Error> {}
+    fn try_from(arr: [i16; 3]) -> Result<Self, Self::Error> {
+        arr.iter()
+            .map(|&c| u8::try_from(c).map_err(|_| IntoColorError::IntConversion))
+            .collect::<Result<Vec<u8>, Self::Error>>()
+            .and_then(|vec| Color::try_from(vec.as_slice()))
+    }
 }
 
-// TODO: Slice implementation.
-// This implementation needs to check the slice length.
-impl TryFrom<&[i16]> for Color {
+impl TryFrom<[i32; 3]> for Color {
     type Error = IntoColorError;
 
-    fn try_from(slice: &[i16]) -> Result<Self, Self::Error> {}
+    fn try_from(arr: [i32; 3]) -> Result<Self, Self::Error> {
+        arr.iter()
+            .map(|&c| u8::try_from(c).map_err(|_| IntoColorError::IntConversion))
+            .collect::<Result<Vec<u8>, Self::Error>>()
+            .and_then(|vec| Color::try_from(vec.as_slice()))
+    }
+}
+
+// Target impl - everything should use this by converting to [u8; 3]
+impl From<[u8; 3]> for Color {
+    fn from(value: [u8; 3]) -> Self {
+        Self {
+            red: value[0],
+            green: value[1],
+            blue: value[2],
+        }
+    }
+}
+
+impl TryFrom<&[i32]> for Color {
+    type Error = IntoColorError;
+
+    fn try_from(slice: &[i32]) -> Result<Self, Self::Error> {
+        if slice.len() != 3 {
+            return Err(IntoColorError::BadLen);
+        }
+
+        slice.iter()
+            .map(|&c| u8::try_from(c).map_err(|_| IntoColorError::IntConversion))
+            .collect::<Result<Vec<u8>, Self::Error>>()
+            .and_then(|vec| Color::try_from(vec.as_slice()))
+    }
 }
 
 fn main() {
